@@ -1,0 +1,6 @@
+{
+  "name": "Shopee Order & Return Tracker",
+  "description": "Rekap status pesanan dan pelacak retur Shopee otomatis dari file export Excel dan CSV Seller Centre dengan analisis COD dan estimasi kerugian.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
