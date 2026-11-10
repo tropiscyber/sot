@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   LayoutDashboard,
   Package,
@@ -8,6 +7,8 @@ import {
   RotateCcw,
   ShieldCheck,
   X,
+  LogOut,
+  User as UserIcon,
 } from 'lucide-react';
 
 export type ActiveNavMenu = 'dashboard' | 'orders' | 'returns' | 'cod' | 'po_deadline';
@@ -25,6 +26,11 @@ interface SidebarProps {
   onPurgeSample: () => void;
   isOpenMobile: boolean;
   onCloseMobile: () => void;
+  userName?: string | null;
+  userEmail?: string | null;
+  userPhoto?: string | null;
+  onLogout?: () => void;
+  onOpenAccessModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -40,6 +46,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onPurgeSample,
   isOpenMobile,
   onCloseMobile,
+  userName,
+  userEmail,
+  userPhoto,
+  onLogout,
+  onOpenAccessModal,
 }) => {
   const menuItems = [
     {
@@ -198,9 +209,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Sidebar Footer & Data Health */}
-        <div className="p-3 border-t border-slate-200 bg-slate-50/50">
-          <div className="flex items-center justify-between text-[11px] text-slate-500 mb-2 px-1">
+        {/* Sidebar Footer & User Profile / Data Health */}
+        <div className="p-3 border-t border-slate-200 bg-slate-50/70 space-y-2.5">
+          {/* User profile tile */}
+          <div className="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200/80 rounded-lg shadow-2xs">
+            <div className="flex items-center gap-2 min-w-0">
+              {userPhoto ? (
+                <img
+                  src={userPhoto}
+                  alt={userName || 'User'}
+                  className="w-7 h-7 rounded-full object-cover shrink-0 border border-slate-200"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-xs shrink-0">
+                  {userName ? userName.charAt(0).toUpperCase() : 'A'}
+                </div>
+              )}
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-slate-900 block truncate" title={userName || 'Admin Toko'}>
+                  {userName || 'Admin Toko'}
+                </span>
+                <span className="text-[10px] text-slate-400 block truncate font-mono" title={userEmail || ''}>
+                  {userEmail || 'Sesi Terautentikasi'}
+                </span>
+              </div>
+            </div>
+
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                title="Keluar / Kunci Dashboard Toko"
+                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors shrink-0 cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Access modal trigger */}
+          {onOpenAccessModal && (
+            <button
+              onClick={onOpenAccessModal}
+              className="w-full flex items-center justify-between px-2.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-md text-[11px] font-medium text-slate-700 transition-colors cursor-pointer shadow-2xs"
+            >
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-orange-600" />
+                <span>Hak Akses & PIN Toko</span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono">Kelola &rarr;</span>
+            </button>
+          )}
+
+          <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span className="font-mono tabular-nums">{orderCount} Pesanan Tersimpan</span>
@@ -215,7 +275,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <div className="text-[10px] text-slate-400 text-center">
-            Penyimpanan Lokal Browser Aman · v2.5
+            Penyimpanan Aman · Firebase Protected
           </div>
         </div>
       </aside>

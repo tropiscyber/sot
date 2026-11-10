@@ -11,6 +11,8 @@ import {
   PackageX,
   Truck,
   Sparkles,
+  LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import { ActiveNavMenu } from './Sidebar';
 
@@ -24,6 +26,10 @@ interface HeaderProps {
   onNavigateToPo: () => void;
   poUrgentCount?: number;
   orderCount: number;
+  userName?: string | null;
+  userPhoto?: string | null;
+  onLogout?: () => void;
+  onOpenAccessModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -36,6 +42,10 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateToPo,
   poUrgentCount = 0,
   orderCount,
+  userName,
+  userPhoto,
+  onLogout,
+  onOpenAccessModal,
 }) => {
   const titles: Record<ActiveNavMenu, { title: string; subtitle: string; icon: any }> = {
     dashboard: {
@@ -149,14 +159,37 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Upload Shopee</span>
             </button>
 
+            {/* Access & Security Management */}
+            {onOpenAccessModal && (
+              <button
+                onClick={onOpenAccessModal}
+                title="Kelola Hak Akses & PIN Toko"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors whitespace-nowrap cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-orange-600" />
+                <span>Hak Akses</span>
+              </button>
+            )}
+
             {/* Reset */}
             <button
               onClick={onResetData}
               title="Reset data ke lembar kosong"
-              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
+
+            {/* Logout / Lock Store */}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                title="Keluar / Kunci Akses Toko"
+                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer ml-1"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>

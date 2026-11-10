@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginPage } from './components/LoginPage';
 import { Sidebar, ActiveNavMenu } from './components/Sidebar';
 import { Header } from './components/Header';
 import { OrderTable } from './components/OrderTable';
@@ -11,6 +13,7 @@ import { PoDeadlinePanel } from './components/PoDeadlinePanel';
 import { DateRangePicker } from './components/DateRangePicker';
 import { FileUploadModal } from './components/FileUploadModal';
 import { OrderDetailModal } from './components/OrderDetailModal';
+import { AccessManagementModal } from './components/AccessManagementModal';
 import { ShopeeOrderRecord, PhysicalReturnStatus } from './types/shopee';
 import {
   loadOrdersFromStorage,
@@ -31,9 +34,11 @@ import {
   Sparkles,
   ArrowRight,
   Package,
+  Store,
 } from 'lucide-react';
 
-export default function App() {
+function DashboardApp() {
+  const { isAuthenticated, isLoading, profile, logout } = useAuth();
   const [orders, setOrders] = useState<ShopeeOrderRecord[]>([]);
   const [activeMenu, setActiveMenu] = useState<ActiveNavMenu>('dashboard');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -42,6 +47,7 @@ export default function App() {
   const [endDate, setEndDate] = useState<string>('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<ShopeeOrderRecord | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -207,6 +213,25 @@ export default function App() {
   const sampleOrdersCount = orders.filter(isSampleOrder).length;
   const realOrdersCount = orders.filter((o) => !isSampleOrder(o)).length;
 
+  // 1. Loading Splash Screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
+        <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center text-white animate-pulse shadow-lg mb-3">
+          <Store className="w-6 h-6" />
+        </div>
+        <p className="text-sm font-semibold text-white tracking-wide">Memverifikasi Sesi Toko...</p>
+        <span className="text-xs text-slate-400 mt-1">Firebase Authentication</span>
+      </div>
+    );
+  }
+
+  // 2. Security Gate: If not authenticated, show LoginPage
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  // 3. Authenticated: Render Main App
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
       {/* 1. Left Sidebar Navigation */}
@@ -223,6 +248,11 @@ export default function App() {
         onPurgeSample={handlePurgeSampleData}
         isOpenMobile={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
+        userName={profile?.displayName}
+        userEmail={profile?.email}
+        userPhoto={profile?.photoURL}
+        onLogout={logout}
+        onOpenAccessModal={() => setIsAccessModalOpen(true)}
       />
 
       {/* 2. Main Right Content Layout */}
@@ -238,6 +268,10 @@ export default function App() {
           onNavigateToPo={() => setActiveMenu('po_deadline')}
           poUrgentCount={poSummary.overdueCount + poSummary.todayCount}
           orderCount={orders.length}
+          userName={profile?.displayName}
+          userPhoto={profile?.photoURL}
+          onLogout={logout}
+          onOpenAccessModal={() => setIsAccessModalOpen(true)}
         />
 
         {/* Dedicated Main Viewport Per Menu */}
@@ -445,6 +479,12 @@ export default function App() {
         onUpdateOrder={handleUpdateSingleOrder}
       />
 
+      {/* Access Management Modal (Whitelist & PIN) */}
+      <AccessManagementModal
+        isOpen={isAccessModalOpen}
+        onClose={() => setIsAccessModalOpen(false)}
+      />
+
       {/* Notification Toast */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-lg shadow-lg text-xs font-medium flex items-center gap-2 animate-in slide-in-from-bottom-2 duration-150">
@@ -453,5 +493,13 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <DashboardApp />
+    </AuthProvider>
   );
 }
