@@ -1,6 +1,6 @@
 {
-  "summary":  "Rencana implementasi aplikasi rekap dan pemantauan status pesanan Shopee berbasis export file berkala (Excel .xlsx dan CSV) dari Seller Centre, dilengkapi pelacak retur, analisis alasan retur, estimasi kerugian finansial/ongkir, filter periode, dan penyimpanan lokal otomatis.",
-  "updatedAt":  "2026-11-10T02:29:05.046869395Z",
+  "summary":  "Rencana implementasi eliminasi tombol ganda (duplikasi aksi) antara Sidebar dan Top Header Bar sesuai preferensi pengguna: mempertahankan tombol aksi di Top Header Bar dan menghapus seksi 'Aksi & Laporan' dari Sidebar kiri agar navigasi tetap ramping, bersih, dan ergonomis.",
+  "updatedAt":  "2026-11-10T16:05:06.603585917Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

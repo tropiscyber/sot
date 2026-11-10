@@ -5,16 +5,9 @@ import {
   PackageX,
   Truck,
   Clock,
-  UploadCloud,
-  FileSpreadsheet,
-  FileDown,
   RotateCcw,
-  Sparkles,
-  ChevronRight,
   ShieldCheck,
   X,
-  Store,
-  Layers,
 } from 'lucide-react';
 
 export type ActiveNavMenu = 'dashboard' | 'orders' | 'returns' | 'cod' | 'po_deadline';
@@ -28,9 +21,6 @@ interface SidebarProps {
   poCount: number;
   poUrgentCount: number;
   hasSampleOrders: boolean;
-  onOpenUpload: () => void;
-  onExportExcel: () => void;
-  onExportPdf?: () => void;
   onResetData: () => void;
   onPurgeSample: () => void;
   isOpenMobile: boolean;
@@ -46,9 +36,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   poCount,
   poUrgentCount,
   hasSampleOrders,
-  onOpenUpload,
-  onExportExcel,
-  onExportPdf,
   onResetData,
   onPurgeSample,
   isOpenMobile,
@@ -133,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Mobile close button */}
             <button
               onClick={onCloseMobile}
-              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md lg:hidden"
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md lg:hidden cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -146,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="font-semibold text-amber-900 text-[11px]">Mode Contoh Aktif</span>
                 <button
                   onClick={onPurgeSample}
-                  className="text-[10px] font-semibold text-amber-700 hover:text-amber-900 hover:underline"
+                  className="text-[10px] font-semibold text-amber-700 hover:text-amber-900 hover:underline cursor-pointer"
                 >
                   Bersihkan
                 </button>
@@ -209,48 +196,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               );
             })}
           </div>
-
-          {/* Quick Action Buttons */}
-          <div className="px-3 pt-2 space-y-2 border-t border-slate-100 mt-2">
-            <div className="px-3 py-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Aksi & Laporan
-            </div>
-
-            <button
-              onClick={() => {
-                onOpenUpload();
-                onCloseMobile();
-              }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
-            >
-              <UploadCloud className="w-4 h-4 shrink-0" />
-              <span>Upload Laporan Shopee</span>
-            </button>
-
-            {onExportPdf && (
-              <button
-                onClick={() => {
-                  onExportPdf();
-                  onCloseMobile();
-                }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-              >
-                <FileDown className="w-4 h-4 text-orange-600 shrink-0" />
-                <span>Download Laporan PDF</span>
-              </button>
-            )}
-
-            <button
-              onClick={() => {
-                onExportExcel();
-                onCloseMobile();
-              }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-            >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Ekspor Rekap Excel</span>
-            </button>
-          </div>
         </div>
 
         {/* Sidebar Footer & Data Health */}
@@ -263,7 +208,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               onClick={onResetData}
               title="Reset seluruh data ke lembar kosong"
-              className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors"
+              className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>

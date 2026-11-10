@@ -9,6 +9,8 @@ import {
   ShieldCheck,
   Truck,
   Edit3,
+  ChevronDown,
+  AlertCircle,
 } from 'lucide-react';
 import { PaginationControls } from './PaginationControls';
 
@@ -26,6 +28,8 @@ export const ReturnTrackingPanel: React.FC<ReturnTrackingPanelProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [isReasonsOpen, setIsReasonsOpen] = useState(false);
+  const [isCouriersOpen, setIsCouriersOpen] = useState(false);
 
   const returnOrders = useMemo(() => {
     return orders.filter(
@@ -96,77 +100,169 @@ export const ReturnTrackingPanel: React.FC<ReturnTrackingPanelProps> = ({
         </div>
       </div>
 
-      {/* Analytics 2-Column: Alasan Retur Terbanyak vs Kurir */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Alasan Retur */}
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <h4 className="text-sm font-bold text-slate-900 mb-3">
-            Alasan Pengembalian & Gagal Antar Terbanyak
-          </h4>
-          {analytics.returnReasonsBreakdown.length === 0 ? (
-            <div className="text-xs text-slate-400 py-4 text-center">Belum ada data retur tercatat.</div>
-          ) : (
-            <div className="space-y-3">
-              {analytics.returnReasonsBreakdown.slice(0, 5).map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-slate-800 truncate max-w-[260px]">
-                      {item.reason}
-                    </span>
-                    <span className="font-mono tabular-nums text-slate-600">
-                      {item.count} pesanan ({item.percentage.toFixed(0)}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-red-500 h-full rounded-full"
-                      style={{ width: `${Math.min(item.percentage, 100)}%` }}
-                    />
-                  </div>
-                  <div className="text-xs text-slate-400 flex justify-between">
-                    <span>Estimasi nilai barang:</span>
-                    <span className="font-mono tabular-nums text-slate-600 font-medium">
-                      {formatRupiah(item.totalLoss)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Collapsible Dropdowns: Alasan Retur Terbanyak & Rasio Kurir (Hemat Ruang) */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Analisis Alasan Retur & Evaluasi Ekspedisi
+            </span>
+            <span className="text-slate-300">·</span>
+            <span className="text-[11px] text-slate-400">
+              Format dropdown hemat ruang
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              const shouldOpen = !isReasonsOpen || !isCouriersOpen;
+              setIsReasonsOpen(shouldOpen);
+              setIsCouriersOpen(shouldOpen);
+            }}
+            className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-md shadow-2xs transition-colors cursor-pointer"
+          >
+            {isReasonsOpen && isCouriersOpen ? 'Lipat Semua Dropdown' : 'Buka Semua Dropdown'}
+          </button>
         </div>
 
-        {/* Performa Kurir & Retur */}
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <h4 className="text-sm font-bold text-slate-900 mb-3">
-            Rasio Retur per Ekspedisi (Jasa Kirim)
-          </h4>
-          {analytics.courierBreakdown.length === 0 ? (
-            <div className="text-xs text-slate-400 py-4 text-center">Belum ada data ekspedisi.</div>
-          ) : (
-            <div className="space-y-3">
-              {analytics.courierBreakdown.map((c, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-1.5 font-medium text-slate-800">
-                      <Truck className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{c.courier}</span>
-                    </div>
-                    <span className="font-mono tabular-nums font-semibold text-slate-900">
-                      {c.returned} retur / {c.total} total ({c.returnRate.toFixed(1)}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        c.returnRate > 15 ? 'bg-red-500' : c.returnRate > 8 ? 'bg-amber-500' : 'bg-emerald-500'
-                      }`}
-                      style={{ width: `${Math.min(c.returnRate * 2.5, 100)}%` }}
-                    />
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* 1. Dropdown: Alasan Retur Terbanyak */}
+          <div className="bg-white border border-slate-200 rounded-lg shadow-xs overflow-hidden transition-all">
+            <button
+              onClick={() => setIsReasonsOpen(!isReasonsOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between text-left transition-colors hover:bg-slate-50/80 cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="p-1.5 rounded-md bg-red-50 text-red-600 shrink-0">
+                  <AlertCircle className="w-4 h-4" />
                 </div>
-              ))}
-            </div>
-          )}
+                <div className="min-w-0">
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                    Alasan Pengembalian & Gagal Antar Terbanyak
+                  </h4>
+                  <span className="text-[11px] text-slate-500 font-mono tabular-nums block">
+                    {analytics.returnReasonsBreakdown.length} alasan terdeteksi pada data retur
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                <span className="text-xs font-medium text-slate-600 hidden sm:inline">
+                  {isReasonsOpen ? 'Tutup' : 'Buka Rincian'}
+                </span>
+                <div className={`p-1 rounded-md transition-transform duration-200 ${isReasonsOpen ? 'rotate-180 bg-slate-100 text-slate-900' : 'text-slate-400'}`}>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+            </button>
+
+            {/* Dropdown Body */}
+            {isReasonsOpen && (
+              <div className="px-4 pb-4 pt-2 border-t border-slate-100 animate-in fade-in duration-150">
+                {analytics.returnReasonsBreakdown.length === 0 ? (
+                  <div className="text-xs text-slate-400 py-4 text-center">
+                    Belum ada data retur tercatat.
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-1">
+                    {analytics.returnReasonsBreakdown.slice(0, 5).map((item, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-medium text-slate-800 truncate max-w-[260px]" title={item.reason}>
+                            {item.reason}
+                          </span>
+                          <span className="font-mono tabular-nums text-slate-600">
+                            {item.count} pesanan ({item.percentage.toFixed(0)}%)
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                          <div
+                            className="bg-red-500 h-full rounded-full"
+                            style={{ width: `${Math.min(item.percentage, 100)}%` }}
+                          />
+                        </div>
+                        <div className="text-[11px] text-slate-400 flex justify-between">
+                          <span>Estimasi nilai barang:</span>
+                          <span className="font-mono tabular-nums text-slate-600 font-medium">
+                            {formatRupiah(item.totalLoss)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* 2. Dropdown: Rasio Retur per Ekspedisi */}
+          <div className="bg-white border border-slate-200 rounded-lg shadow-xs overflow-hidden transition-all">
+            <button
+              onClick={() => setIsCouriersOpen(!isCouriersOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between text-left transition-colors hover:bg-slate-50/80 cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="p-1.5 rounded-md bg-sky-50 text-sky-600 shrink-0">
+                  <Truck className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                    Rasio Retur per Ekspedisi (Jasa Kirim)
+                  </h4>
+                  <span className="text-[11px] text-slate-500 font-mono tabular-nums block">
+                    {analytics.courierBreakdown.length} jasa kirim aktif terdaftar
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                <span className="text-xs font-medium text-slate-600 hidden sm:inline">
+                  {isCouriersOpen ? 'Tutup' : 'Buka Rincian'}
+                </span>
+                <div className={`p-1 rounded-md transition-transform duration-200 ${isCouriersOpen ? 'rotate-180 bg-slate-100 text-slate-900' : 'text-slate-400'}`}>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+            </button>
+
+            {/* Dropdown Body */}
+            {isCouriersOpen && (
+              <div className="px-4 pb-4 pt-2 border-t border-slate-100 animate-in fade-in duration-150">
+                {analytics.courierBreakdown.length === 0 ? (
+                  <div className="text-xs text-slate-400 py-4 text-center">
+                    Belum ada data ekspedisi.
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-1">
+                    {analytics.courierBreakdown.map((c, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-1.5 font-medium text-slate-800">
+                            <Truck className="w-3.5 h-3.5 text-slate-500" />
+                            <span>{c.courier}</span>
+                          </div>
+                          <span className="font-mono tabular-nums font-semibold text-slate-900">
+                            {c.returned} retur / {c.total} total ({c.returnRate.toFixed(1)}%)
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              c.returnRate > 15
+                                ? 'bg-red-500'
+                                : c.returnRate > 8
+                                ? 'bg-amber-500'
+                                : 'bg-emerald-500'
+                            }`}
+                            style={{ width: `${Math.min(c.returnRate * 2.5, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

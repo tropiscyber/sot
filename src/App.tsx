@@ -219,9 +219,6 @@ export default function App() {
         poCount={poSummary.totalPoOrders}
         poUrgentCount={poSummary.overdueCount + poSummary.todayCount}
         hasSampleOrders={hasSampleOrders}
-        onOpenUpload={() => setIsUploadOpen(true)}
-        onExportExcel={handleExportAll}
-        onExportPdf={orders.length > 0 ? handleExportPdf : undefined}
         onResetData={handleResetData}
         onPurgeSample={handlePurgeSampleData}
         isOpenMobile={isMobileMenuOpen}
@@ -230,7 +227,7 @@ export default function App() {
 
       {/* 2. Main Right Content Layout */}
       <div className="flex-1 flex flex-col min-w-0 lg:pl-72">
-        {/* Top Header Navigation */}
+        {/* Top Header Navigation (Global Actions & Exports) */}
         <Header
           activeMenu={activeMenu}
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
